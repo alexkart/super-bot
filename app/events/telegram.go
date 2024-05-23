@@ -99,6 +99,11 @@ func (l *TelegramListener) Do(ctx context.Context) error {
 				continue
 			}
 
+			if update.Message.Chat.Type == "private" {
+				log.Print("[DEBUG] ignoring private message")
+				continue
+			}
+
 			fromChat := update.Message.Chat.ID
 
 			msg := l.transform(update.Message)

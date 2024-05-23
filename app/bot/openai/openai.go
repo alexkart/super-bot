@@ -68,7 +68,7 @@ func NewOpenAI(params Params, httpClient *http.Client, superUser bot.SuperUser) 
 func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 	ok, reqText := o.request(msg.Text)
 	if !ok {
-		if !o.params.EnableAutoResponse || msg.Text == "idle" || len(msg.Text) < 8 {
+		if !o.params.EnableAutoResponse || msg.Text == "idle" || len(msg.Text) < 3 {
 			// don't answer on short messages or "idle" command or if auto response is disabled
 			return bot.Response{}
 		}
@@ -81,7 +81,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 			return bot.Response{}
 		}
 
-		responseAI, err := o.chatGPTRequestWithHistory("You answer with no more than 50 words, should be in Russian language")
+		responseAI, err := o.chatGPTRequestWithHistory("You answer with no more than 50 words, should be in in the same language as the question")
 		if err != nil {
 			log.Printf("[WARN] failed to make context request to ChatGPT error=%v", err)
 			return bot.Response{}
@@ -93,7 +93,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		}
 	}
 
-	if ok, banMessage := o.checkRequest(msg.From.Username, reqText); !ok {
+	if ok, banMessage := o.checkRequest(msg.From.Username); !ok {
 		return bot.Response{
 			Text:        banMessage,
 			Send:        true,
@@ -103,13 +103,13 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		}
 	}
 
-	responseAI, err := o.chatGPTRequest(reqText, o.params.Prompt, "You answer with no more than 50 words")
+	responseAI, err := o.chatGPTRequest(reqText, o.params.Prompt, "You answer with no more than 100 words")
 	if err != nil {
 		log.Printf("[WARN] failed to make request to ChatGPT '%s', error=%v", reqText, err)
 		return bot.Response{}
 	}
 
-	if ok, banMessage := o.checkResponseAI(msg.From.Username, responseAI); !ok {
+	if ok, banMessage := o.checkResponseAI(msg.From.Username); !ok {
 		return bot.Response{
 			Text:        banMessage,
 			Send:        true,
@@ -142,23 +142,15 @@ func (o *OpenAI) request(text string) (react bool, reqText string) {
 	return false, ""
 }
 
-func (o *OpenAI) checkRequest(username, text string) (ok bool, banMessage string) {
+func (o *OpenAI) checkRequest(username string) (ok bool, banMessage string) {
 	if o.superUser.IsSuper(username) {
 		return true, ""
 	}
 
-	wtfContains := bot.WTFSteroidChecker{Message: text}
-
-	if wtfContains.ContainsWTF() {
-		log.Printf("[WARN] OpenAI bot has wtf request, %s banned", username)
-		reason := "Вы знаете правила"
-		return false, fmt.Sprintf("%s\n@%s получает бан на 1 час.", reason, username)
-	}
-
-	if o.nowFn().Sub(o.lastDT) < 30*time.Minute {
+	if o.nowFn().Sub(o.lastDT) < 1*time.Minute {
 		log.Printf("[WARN] OpenAI bot is too busy, last request was %s ago, %s banned", time.Since(o.lastDT), username)
 		reason := fmt.Sprintf("Слишком много запросов, следующий запрос можно будет сделать через %d минут.",
-			int(30-time.Since(o.lastDT).Minutes()))
+			int(1-time.Since(o.lastDT).Minutes()))
 
 		return false, fmt.Sprintf("%s\n@%s получает бан на 1 час.", reason, username)
 	}
@@ -166,16 +158,9 @@ func (o *OpenAI) checkRequest(username, text string) (ok bool, banMessage string
 	return true, ""
 }
 
-func (o *OpenAI) checkResponseAI(username, responseAI string) (ok bool, banMessage string) {
+func (o *OpenAI) checkResponseAI(username string) (ok bool, banMessage string) {
 	if o.superUser.IsSuper(username) {
 		return true, ""
-	}
-
-	wtfContains := bot.WTFSteroidChecker{Message: responseAI}
-
-	if wtfContains.ContainsWTF() {
-		log.Printf("[WARN] OpenAI bot response contains wtf, User %s banned", username)
-		return false, fmt.Sprintf("@%s выиграл в лотерею и получает бан на 1 час.", username)
 	}
 
 	return true, ""

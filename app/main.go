@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -66,10 +64,10 @@ var opts struct {
 		Prompt            string `long:"prompt" env:"PROMPT" default:"" description:"OpenAI prompt"`
 
 		EnableAutoResponse      bool `long:"auto-response" env:"AUTO_RESPONSE" description:"enable auto response from OpenAI"`
-		HistorySize             int  `long:"history-size" env:"HISTORY_SIZE" default:"5" description:"OpenAI history size for context answers"`
-		HistoryReplyProbability int  `long:"history-reply-probability" env:"HISTORY_REPLY_PROBABILITY" default:"10" description:"percentage of the probability to reply with history (0%-100%)"`
+		HistorySize             int  `long:"history-size" env:"HISTORY_SIZE" default:"1" description:"OpenAI history size for context answers"`
+		HistoryReplyProbability int  `long:"history-reply-probability" env:"HISTORY_REPLY_PROBABILITY" default:"50" description:"percentage of the probability to reply with history (0%-100%)"`
 
-		Timeout time.Duration `long:"timeout" env:"TIMEOUT" default:"120s" description:"OpenAI timeout in seconds"`
+		Timeout time.Duration `long:"timeout" env:"TIMEOUT" default:"60s" description:"OpenAI timeout in seconds"`
 	} `group:"openai" namespace:"openai" env-namespace:"OPENAI"`
 
 	RemarkAPI            string `long:"remark-api" env:"REMARK_API" default:"https://remark42.radio-t.com/api/v1/find" description:"Remark API"`
@@ -126,61 +124,16 @@ func main() {
 	}, httpClientOpenAI, opts.SuperUsers)
 
 	multiBot := bot.MultiBot{
-		bot.NewBroadcastStatus(
-			ctx,
-			bot.BroadcastParams{
-				URL:          "https://stream.radio-t.com",
-				PingInterval: 10 * time.Second,
-				DelayToOff:   time.Minute,
-				Client:       http.Client{Timeout: 5 * time.Second}}),
-		bot.NewNews(httpClient, "https://news.radio-t.com/api", opts.NewsArticles),
 		bot.NewAnecdote(httpClient),
 		bot.NewStackOverflow(),
 		bot.NewDuck(opts.MashapeToken, httpClient),
-		bot.NewPodcasts(httpClient, "https://radio-t.com/site-api", 5),
-		bot.NewPrepPost(httpClient, "https://radio-t.com/site-api", 5*time.Minute),
-		bot.NewWTF(time.Hour*24, 7*time.Hour*24, opts.SuperUsers),
-		bot.NewBanhammer(tbAPI, opts.SuperUsers, 5000),
-		bot.NewWhen(),
 		openAIBot,
-	}
-
-	if opts.SpamFilter.Enabled {
-		log.Printf("[INFO] spam filter enabled, dry=%v", opts.SpamFilter.Dry)
-		httpCasClient := &http.Client{Timeout: opts.SpamFilter.TimeOut}
-		spamFh, err := os.Open(opts.SpamFilter.Samples)
-		if err != nil {
-			log.Fatalf("[ERROR] failed to open spam samples file %s, %v", opts.SpamFilter.Samples, err)
-		}
-		spamContent, ere := io.ReadAll(spamFh)
-		if ere != nil {
-			log.Fatalf("[ERROR] failed to read spam samples file %s, %v", opts.SpamFilter.Samples, err)
-		}
-		spamReaderLocal := bytes.NewReader(spamContent)
-		params := bot.SpamParams{
-			SpamSamples:         spamReaderLocal,
-			SimilarityThreshold: opts.SpamFilter.Threshold,
-			SuperUser:           opts.SuperUsers,
-			MinMsgLen:           opts.SpamFilter.MinMsgLen,
-			CasAPI:              opts.SpamFilter.API,
-			HTTPClient:          httpCasClient,
-			Dry:                 opts.SpamFilter.Dry,
-		}
-		multiBot = append(multiBot, bot.NewSpamFilter(params))
-	} else {
-		log.Print("[INFO] spam filter disabled")
 	}
 
 	if sb, err := bot.NewSys(opts.SysData); err == nil {
 		multiBot = append(multiBot, sb)
 	} else {
 		log.Printf("[ERROR] failed to load sysbot, %v", err)
-	}
-
-	if wttb, err := bot.NewWhatsTheTime(opts.SysData); err == nil {
-		multiBot = append(multiBot, wttb)
-	} else {
-		log.Printf("[ERROR] failed to load whats the time bot, %v", err)
 	}
 
 	allActivityTerm := events.Terminator{
@@ -193,14 +146,14 @@ func main() {
 	botsActivityTerm := events.Terminator{
 		BanDuration:   time.Minute * 15,
 		BanPenalty:    3,
-		AllowedPeriod: time.Minute * 5,
+		AllowedPeriod: time.Minute * 1,
 		Exclude:       opts.SuperUsers,
 	}
 
 	botsAllUsersActivityTerm := events.Terminator{
 		BanDuration:   time.Minute * 5,
 		BanPenalty:    5,
-		AllowedPeriod: time.Minute * 5,
+		AllowedPeriod: time.Minute * 1,
 		Exclude:       opts.SuperUsers,
 	}
 
