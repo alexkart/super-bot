@@ -1,13 +1,8 @@
-# Telegram бот подкаста Радио-Т
-
-[![Build Status](https://github.com/radio-t/gitter-rt-bot/workflows/build/badge.svg)](https://github.com/radio-t/gitter-rt-bot/actions) [![Go Report Card](https://goreportcard.com/badge/github.com/radio-t/gitter-rt-bot)](https://goreportcard.com/report/github.com/radio-t/gitter-rt-bot) [![Coverage Status](https://coveralls.io/repos/github/radio-t/super-bot/badge.svg?branch=master)](https://coveralls.io/github/radio-t/super-bot?branch=master)
+# Telegram бот
 
 ## Основная функциональность
 
-Бот слушает [чат Telegram](https://t.me/radio_t_chat) и реагирует на определенные команды и фрагменты текста.
-Кроме этого, он слушает API новостей и публикует в Telegram сообщения о начале выпуска и смене тем.
-
-С ботом можно [общаться тет-а-тет](https://t.me/radiot_superbot), не засорая общий чат.
+Бот слушает чат Telegram и реагирует на определенные команды и фрагменты текста.
 
 В режиме экспортирования сохраняет лог сообщений в HTML файл.
 
@@ -21,10 +16,8 @@
 |-------------------------------------------|----------------------------------------------------------------------------------------------------------------|
 | `ping`, `пинг`                            | ответит `pong`, `понг`, см. [basic.data](https://github.com/radio-t/gitter-rt-bot/blob/master/data/basic.data) |
 | `анекдот!`, `анкедот!`, `joke!`, `chuck!` | расскажет анекдот с jokesrv.fermyon.app или chucknorris.io                                        |
-| `news!`, `новости!`                       | 5 последних [новостей для Радио-Т](https://news.radio-t.com)                                                   |
 | `so!`                                     | 1 вопрос со [Stackoverflow](https://stackoverflow.com/questions?tab=Active)                                    |
 | `?? <запрос>`, `/ddg <запрос>`            | поискать "<запрос>" на [DuckDuckGo](https://duckduckgo.com)                                                    |
-| `search! <слово>`, `/search <слово>`      | поискать по шоунотам подкастов                                                                                 |
 | `chat! <запрос>`                          | задать вопрос для ChatGPT                                                                                      |
 
 ## Инструкции по локальной разработке
@@ -46,7 +39,7 @@
 * `TELEGRAM_LOGS` (logs) - путь к папке куда пишется лог чата
 * `SYS_DATA` (data) - путь к папке с *.data файлами и шаблоном для построения HTML отчета
 * `TELEGRAM_TIMEOUT` (30s) – HTTP таймаут для скачивания файлов из Telegram при построении HTML отчета
-* `RTJC_PORT` (18001) – порт на который приходят уведомления о новостях
+* `RTJC_PORT` (18001) – порт на который приходят уведомления
 
 Запустить бота можно через Docker Compose:
 
