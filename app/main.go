@@ -64,7 +64,7 @@ var opts struct {
 		Prompt            string `long:"prompt" env:"PROMPT" default:"" description:"OpenAI prompt"`
 
 		EnableAutoResponse      bool `long:"auto-response" env:"AUTO_RESPONSE" description:"enable auto response from OpenAI"`
-		HistorySize             int  `long:"history-size" env:"HISTORY_SIZE" default:"1" description:"OpenAI history size for context answers"`
+		HistorySize             int  `long:"history-size" env:"HISTORY_SIZE" default:"10" description:"OpenAI history size for context answers"`
 		HistoryReplyProbability int  `long:"history-reply-probability" env:"HISTORY_REPLY_PROBABILITY" default:"50" description:"percentage of the probability to reply with history (0%-100%)"`
 
 		Timeout time.Duration `long:"timeout" env:"TIMEOUT" default:"60s" description:"OpenAI timeout in seconds"`

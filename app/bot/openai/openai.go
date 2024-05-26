@@ -81,7 +81,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 			return bot.Response{}
 		}
 
-		responseAI, err := o.chatGPTRequestWithHistory("You answer with no more than 50 words, should be in in the same language as the question")
+		responseAI, err := o.chatGPTRequestWithHistory("You answer with no more than 100 words, should be in in the same language as the question")
 		if err != nil {
 			log.Printf("[WARN] failed to make context request to ChatGPT error=%v", err)
 			return bot.Response{}
@@ -225,11 +225,7 @@ func (o *OpenAI) chatGPTRequest(request, userPrompt, sysPrompt string) (response
 }
 
 func (o *OpenAI) shouldAnswerWithHistory(msg bot.Message) bool {
-	if o.history.count < o.history.limit {
-		return false
-	}
-
-	if msg.Text != "" && msg.Text[len(msg.Text)-1:] != "?" { // don't try to answer to short messages, like wtf?
+	if msg.Text != "" && !strings.Contains(msg.Text, "?") {
 		return false
 	}
 
