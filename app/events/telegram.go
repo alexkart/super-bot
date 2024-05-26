@@ -251,7 +251,7 @@ func (l *TelegramListener) sendBotResponse(resp bot.Response, chatID int64) erro
 
 	log.Printf("[DEBUG] bot response - %+v, pin: %t, reply-to:%d, parse-mode:%s", resp.Text, resp.Pin, resp.ReplyTo, resp.ParseMode)
 	tbMsg := tbapi.NewMessage(chatID, resp.Text)
-	tbMsg.ParseMode = tbapi.ModeMarkdown
+	//tbMsg.ParseMode = tbapi.ModeMarkdown
 	if resp.ParseMode != "" {
 		tbMsg.ParseMode = resp.ParseMode
 	}
