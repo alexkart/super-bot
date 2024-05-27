@@ -82,8 +82,11 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		}
 
 		rndMsg := o.history.GetRandomMessage()
-		rndUsername := rndMsg.From.Username
-		sysPrompt := fmt.Sprintf("You answer with no more than 100 words, should be in in the same language as the question. Answer only to the last question in the conversation. Always mention @%s in your response, you should ask him a question or just say something to him to continue the conversation.", rndUsername)
+		rndUsername := "@" + rndMsg.From.Username
+		if rndUsername == "@" {
+			rndUsername = rndMsg.From.DisplayName
+		}
+		sysPrompt := fmt.Sprintf("You answer with no more than 100 words, should be in in the same language as the question. Answer only to the last question in the conversation. Always mention %s in your response, you should ask him a question or just say something to him to continue the conversation.", rndUsername)
 
 		responseAI, err := o.chatGPTRequestWithHistory(sysPrompt)
 		if err != nil {
