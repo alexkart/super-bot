@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -251,15 +252,23 @@ func (l *TelegramListener) sendBotResponse(resp bot.Response, chatID int64) erro
 
 	log.Printf("[DEBUG] bot response - %+v, pin: %t, reply-to:%d, parse-mode:%s", resp.Text, resp.Pin, resp.ReplyTo, resp.ParseMode)
 	tbMsg := tbapi.NewMessage(chatID, resp.Text)
-	//tbMsg.ParseMode = tbapi.ModeMarkdown
+	tbMsg.ParseMode = tbapi.ModeMarkdown
 	if resp.ParseMode != "" {
 		tbMsg.ParseMode = resp.ParseMode
 	}
 	tbMsg.DisableWebPagePreview = !resp.Preview
 	tbMsg.ReplyToMessageID = resp.ReplyTo
 	res, err := l.TbAPI.Send(tbMsg)
+
 	if err != nil {
-		return fmt.Errorf("can't send message to telegram %q: %w", resp.Text, err)
+		// If it can't parse entities, try to send message without markdown parse mode
+		if tbMsg.ParseMode == tbapi.ModeMarkdown && strings.Contains(err.Error(), "Bad Request: can't parse entities:") {
+			tbMsg.ParseMode = ""
+			res, err = l.TbAPI.Send(tbMsg)
+		}
+		if err != nil {
+			return fmt.Errorf("can't send message to telegram %q: %w", resp.Text, err)
+		}
 	}
 
 	l.saveBotMessage(&res, chatID)

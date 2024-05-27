@@ -159,7 +159,7 @@ func (o *OpenAI) checkRequest(username string) (ok bool, banMessage string) {
 		reason := fmt.Sprintf("Слишком много запросов, следующий запрос можно будет сделать через %d минут.",
 			int(2-time.Since(o.lastDT).Minutes()))
 
-		return false, fmt.Sprintf("%s\n@%s, я с тобой не разговариваю 😜.", reason, username)
+		return false, fmt.Sprintf("%s\n@%s, я устал, я с тобой больше не разговариваю 😜.", reason, username)
 	}
 
 	return true, ""
