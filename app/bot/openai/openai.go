@@ -150,9 +150,9 @@ func (o *OpenAI) checkRequest(username string) (ok bool, banMessage string) {
 	if o.nowFn().Sub(o.lastDT) < 1*time.Minute {
 		log.Printf("[WARN] OpenAI bot is too busy, last request was %s ago, %s banned", time.Since(o.lastDT), username)
 		reason := fmt.Sprintf("Слишком много запросов, следующий запрос можно будет сделать через %d минут.",
-			int(1-time.Since(o.lastDT).Minutes()))
+			int(2-time.Since(o.lastDT).Minutes()))
 
-		return false, fmt.Sprintf("%s\n@%s получает бан на 1 час.", reason, username)
+		return false, fmt.Sprintf("%s\n@%s, я с тобой не разговариваю 😜.", reason, username)
 	}
 
 	return true, ""
