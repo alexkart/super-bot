@@ -1,6 +1,10 @@
 package openai
 
-import "github.com/radio-t/super-bot/app/bot"
+import (
+	"github.com/radio-t/super-bot/app/bot"
+	"math/rand"
+	"time"
+)
 
 // LimitedMessageHistory is a limited message history for OpenAI bot
 // It's using to make context answers in the chat
@@ -27,4 +31,16 @@ func (l *LimitedMessageHistory) Add(message bot.Message) {
 	if len(l.messages) > l.limit {
 		l.messages = l.messages[1:]
 	}
+}
+
+// GetRandomMessage returns a random message from the history
+func (l *LimitedMessageHistory) GetRandomMessage() *bot.Message {
+	if len(l.messages) == 0 {
+		return nil
+	}
+
+	rand.New(rand.NewSource(time.Now().UnixNano()))
+	randomIndex := rand.Intn(len(l.messages))
+
+	return &l.messages[randomIndex]
 }

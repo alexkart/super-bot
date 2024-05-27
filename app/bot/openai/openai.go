@@ -81,7 +81,11 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 			return bot.Response{}
 		}
 
-		responseAI, err := o.chatGPTRequestWithHistory("You answer with no more than 100 words, should be in in the same language as the question. Answer only to the last question in the conversation. Always mention @sebastiano_pereire in your response, you should ask him a question or just say something to him to continue the conversation.")
+		rndMsg := o.history.GetRandomMessage()
+		rndUsername := rndMsg.From.Username
+		sysPrompt := fmt.Sprintf("You answer with no more than 100 words, should be in in the same language as the question. Answer only to the last question in the conversation. Always mention @%s in your response, you should ask him a question or just say something to him to continue the conversation.", rndUsername)
+
+		responseAI, err := o.chatGPTRequestWithHistory(sysPrompt)
 		if err != nil {
 			log.Printf("[WARN] failed to make context request to ChatGPT error=%v", err)
 			return bot.Response{}
