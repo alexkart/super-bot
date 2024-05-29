@@ -78,27 +78,27 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		o.history.Add(msg)
 
 		answeringToQuestion := false
-		sysPrompt := ""
+		sysPrompt := "This is a chat conversation. "
 
 		if o.shouldAnswerWithHistory(msg) {
 			answeringToQuestion = true
-			sysPrompt = fmt.Sprintf("You answer with no more than 100 words, your answer should be in the same language as the question.")
+			sysPrompt = sysPrompt + fmt.Sprintf("You reply with no more than 100 words, your answer should be in the same language as the question.")
 		} else {
 			if shouldRandomlyReply := o.rand(100) < 10; shouldRandomlyReply {
-				sysPrompt = fmt.Sprintf("You answer with no more than 50 words, your answer should be in the same language as the last message. Say something related to the conversation or ask something to continue the conversation.")
+				sysPrompt = sysPrompt + fmt.Sprintf("You reply with no more than 50 words, your message should be in the same language as the last message. Say something related to the conversation or ask something to continue the conversation.")
 			} else {
 				return bot.Response{}
 			}
 		}
 
-		if shouldAnswerWithMention := o.rand(100) < 50; answeringToQuestion && shouldAnswerWithMention {
+		if shouldAnswerWithMention := o.rand(100) < 75; answeringToQuestion && shouldAnswerWithMention {
 			rndMsg := o.history.GetRandomMessage()
 			rndUsername := "@" + rndMsg.From.Username
 			if rndUsername == "@" {
 				rndUsername = rndMsg.From.DisplayName
 			}
 			if rndUsername != "" {
-				sysPrompt = sysPrompt + fmt.Sprintf(" Mention %s in your response, you should ask them a question or just say something to them to continue the conversation.", rndUsername)
+				sysPrompt = sysPrompt + fmt.Sprintf(" Be sure to mention %s in your response, you should ask them a question or just say something to them to continue the conversation.", rndUsername)
 			} // else don't mention anyone
 		}
 
@@ -153,6 +153,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		o.lastDT = o.nowFn() // don't update lastDT for super users
 	}
 
+	o.history.Add(msg)
 	responseAIMsg := bot.Message{
 		Text: responseAI,
 	}
@@ -287,6 +288,9 @@ func (o *OpenAI) chatGPTRequestWithHistory(sysPrompt string) (response string, e
 }
 
 func (o *OpenAI) chatGPTRequestInternal(messages []openai.ChatCompletionMessage) (response string, err error) {
+
+	//log.Printf("[DEBUG] MESSAGES -------->\n %v", messages)
+	//log.Printf("[DEBUG] MESSAGES <--------\n")
 
 	resp, err := o.client.CreateChatCompletion(
 		context.Background(),
