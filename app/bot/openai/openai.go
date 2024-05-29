@@ -77,23 +77,46 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		// save message to history and answer with ChatGPT if needed
 		o.history.Add(msg)
 
-		if !o.shouldAnswerWithHistory(msg) {
-			return bot.Response{}
+		answeringToQuestion := false
+		sysPrompt := ""
+
+		if o.shouldAnswerWithHistory(msg) {
+			answeringToQuestion = true
+			sysPrompt = fmt.Sprintf("You answer with no more than 100 words, your answer should be in in the same language as the question.")
+		} else {
+			if shouldRandomlyReply := o.rand(100) < 5; shouldRandomlyReply {
+				sysPrompt = fmt.Sprintf("You answer with no more than 50 words, your answer should be in in the same language as the last message. Say something related to the conversation or ask something to continue the conversation.")
+			} else {
+				return bot.Response{}
+			}
 		}
 
-		rndMsg := o.history.GetRandomMessage()
-		rndUsername := "@" + rndMsg.From.Username
-		if rndUsername == "@" {
-			rndUsername = rndMsg.From.DisplayName
+		if shouldAnswerWithMention := o.rand(100) < 50; answeringToQuestion && shouldAnswerWithMention {
+			rndMsg := o.history.GetRandomMessage()
+			rndUsername := "@" + rndMsg.From.Username
+			if rndUsername == "@" {
+				rndUsername = rndMsg.From.DisplayName
+			}
+			if rndUsername != "" {
+				sysPrompt = sysPrompt + fmt.Sprintf(" Mention %s in your response, you should ask them a question or just say something to them to continue the conversation.", rndUsername)
+			} // else don't mention anyone
 		}
-		sysPrompt := fmt.Sprintf("You answer with no more than 100 words, should be in in the same language as the question. Answer only to the last question in the conversation. Always mention %s in your response, you should ask him a question or just say something to him to continue the conversation.", rndUsername)
+
+		log.Printf("[DEBUG] sysPrompt: %q", sysPrompt)
 
 		responseAI, err := o.chatGPTRequestWithHistory(sysPrompt)
+
 		if err != nil {
 			log.Printf("[WARN] failed to make context request to ChatGPT error=%v", err)
 			return bot.Response{}
 		}
 		log.Printf("[DEBUG] OpenAI bot answer with history: %q", responseAI)
+
+		responseAIMsg := bot.Message{
+			Text: responseAI,
+		}
+		o.history.Add(responseAIMsg)
+
 		return bot.Response{
 			Text: responseAI,
 			Send: true,
