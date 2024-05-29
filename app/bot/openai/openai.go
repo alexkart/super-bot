@@ -82,10 +82,10 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 
 		if o.shouldAnswerWithHistory(msg) {
 			answeringToQuestion = true
-			sysPrompt = fmt.Sprintf("You answer with no more than 100 words, your answer should be in in the same language as the question.")
+			sysPrompt = fmt.Sprintf("You answer with no more than 100 words, your answer should be in the same language as the question.")
 		} else {
 			if shouldRandomlyReply := o.rand(100) < 10; shouldRandomlyReply {
-				sysPrompt = fmt.Sprintf("You answer with no more than 50 words, your answer should be in in the same language as the last message. Say something related to the conversation or ask something to continue the conversation.")
+				sysPrompt = fmt.Sprintf("You answer with no more than 50 words, your answer should be in the same language as the last message. Say something related to the conversation or ask something to continue the conversation.")
 			} else {
 				return bot.Response{}
 			}
@@ -152,6 +152,11 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 	if !o.superUser.IsSuper(msg.From.Username) {
 		o.lastDT = o.nowFn() // don't update lastDT for super users
 	}
+
+	responseAIMsg := bot.Message{
+		Text: responseAI,
+	}
+	o.history.Add(responseAIMsg)
 
 	log.Printf("[DEBUG] next request to ChatGPT can be made after %s, in %d minutes",
 		o.lastDT.Add(30*time.Minute), int(30-time.Since(o.lastDT).Minutes()))
