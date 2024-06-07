@@ -295,7 +295,7 @@ func (o *OpenAI) chatGPTRequestInternal(messages []openai.ChatCompletionMessage)
 	resp, err := o.client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
-			Model:     openai.GPT3Dot5Turbo,
+			Model:     openai.GPT4o20240513,
 			MaxTokens: o.params.MaxTokensResponse,
 			Messages:  messages,
 		},
