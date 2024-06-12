@@ -82,10 +82,10 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 
 		if o.shouldAnswerWithHistory(msg) {
 			answeringToQuestion = true
-			sysPrompt = sysPrompt + fmt.Sprintf("You reply with no more than 100 words, your answer should be in the same language as the question.")
+			sysPrompt = sysPrompt + fmt.Sprintf("You reply with no more than 100 words, your answer should be in the same language as the question. Don't give a real answer to the question, just make something up, something ridiculous and maybe funny or a bit stupid.")
 		} else {
 			if shouldRandomlyReply := o.rand(100) < 10; shouldRandomlyReply {
-				sysPrompt = sysPrompt + fmt.Sprintf("You reply with no more than 50 words, your message should be in the same language as the last message. Say something related to the conversation or ask something to continue the conversation.")
+				sysPrompt = sysPrompt + fmt.Sprintf("You reply with no more than 100 words, your message should be in the same language as the last message. Say something related to the conversation or ask something to continue the conversation.")
 			} else {
 				return bot.Response{}
 			}
