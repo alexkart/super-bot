@@ -137,8 +137,9 @@ func (b MultiBot) Help() string {
 func (b MultiBot) OnMessage(msg Message) (response Response) {
 	if contains([]string{"help", "/help", "help!"}, msg.Text) {
 		return Response{
-			Text: b.Help(),
-			Send: true,
+			Text:    b.Help(),
+			Send:    true,
+			ReplyTo: msg.ID, // reply to the message
 		}
 	}
 
