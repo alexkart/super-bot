@@ -91,7 +91,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 			}
 		}
 
-		if shouldAnswerWithMention := o.rand(100) < 75; answeringToQuestion && shouldAnswerWithMention {
+		if shouldAnswerWithMention := o.rand(100) < 50; answeringToQuestion && shouldAnswerWithMention {
 			rndMsg := o.history.GetRandomMessage()
 			rndUsername := "@" + rndMsg.From.Username
 			if rndUsername == "@" {
@@ -118,8 +118,9 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		o.history.Add(responseAIMsg)
 
 		return bot.Response{
-			Text: responseAI,
-			Send: true,
+			Text:    responseAI,
+			Send:    true,
+			ReplyTo: msg.ID, // reply to the message
 		}
 	}
 

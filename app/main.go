@@ -65,7 +65,7 @@ var opts struct {
 
 		EnableAutoResponse      bool `long:"auto-response" env:"AUTO_RESPONSE" description:"enable auto response from OpenAI"`
 		HistorySize             int  `long:"history-size" env:"HISTORY_SIZE" default:"10" description:"OpenAI history size for context answers"`
-		HistoryReplyProbability int  `long:"history-reply-probability" env:"HISTORY_REPLY_PROBABILITY" default:"50" description:"percentage of the probability to reply with history (0%-100%)"`
+		HistoryReplyProbability int  `long:"history-reply-probability" env:"HISTORY_REPLY_PROBABILITY" default:"25" description:"percentage of the probability to reply with history (0%-100%)"`
 
 		Timeout time.Duration `long:"timeout" env:"TIMEOUT" default:"60s" description:"OpenAI timeout in seconds"`
 	} `group:"openai" namespace:"openai" env-namespace:"OPENAI"`

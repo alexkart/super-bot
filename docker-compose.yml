@@ -23,4 +23,4 @@ services:
     ports:
       - "18001:18001" # RJTC_PORT
 
-    command: /srv/telegram-rt-bot --super=umputun --super=bobuk --super=grayru --super=ksenks
+    command: /srv/telegram-rt-bot --super=alexkart
