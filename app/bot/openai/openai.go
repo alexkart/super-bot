@@ -66,6 +66,9 @@ func NewOpenAI(params Params, httpClient *http.Client, superUser bot.SuperUser) 
 
 // OnMessage pass msg to all bots and collects responses
 func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
+	//log.Printf("[-----------------DEBUG-----------------]")
+	//log.Printf("%+v", msg)
+	//log.Printf("[-----------------DEBUG-----------------]")
 	ok, reqText := o.request(msg.Text)
 	if !ok {
 		if !o.params.EnableAutoResponse || msg.Text == "idle" || len(msg.Text) < 3 {

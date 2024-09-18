@@ -42,3 +42,5 @@ require (
 	golang.org/x/sys v0.20.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/go-telegram-bot-api/telegram-bot-api/v5 => ./telegram-bot-api/

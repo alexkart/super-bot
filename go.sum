@@ -33,8 +33,6 @@ github.com/go-pkgz/requester v0.2.0 h1:6cztjLT+NiMwIS7KH0hxejtaAMiuTprbeY77X3PJZ
 github.com/go-pkgz/requester v0.2.0/go.mod h1:bkOhrLjuu4ig5gXrEzihH9hfmEfDeul2UMVJGqri1Vc=
 github.com/go-pkgz/syncs v1.3.2 h1:gmioASlJNy3gNosPlgvWOM2QP0Hdjzn2u+/sUShgd8E=
 github.com/go-pkgz/syncs v1.3.2/go.mod h1:qjgzpp7OpuhDf7BWsW/FHCu9DLjE32NPy6/vXAXT/Cw=
-github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 h1:wG8n/XJQ07TmjbITcGiUaOtXxdrINDz1b0J1w0SzqDc=
-github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1/go.mod h1:A2S0CWkNylc2phvKXWBBdD3K0iGnDBGbzRpISP2zBl8=
 github.com/go-test/deep v1.0.4 h1:u2CU3YKy9I2pmu9pX0eq50wCgjfGIt539SqR7FbHiho=
 github.com/go-test/deep v1.0.4/go.mod h1:wGDj63lr65AM2AQyKZd/NYHGb0R+1RLqB8NKt3aSFNA=
 github.com/google/go-cmp v0.5.7/go.mod h1:n+brtR0CgQNWTVd5ZUFpTBC8YFBDLK/h/bpaJ8/DtOE=

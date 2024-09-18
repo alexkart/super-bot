@@ -38,7 +38,7 @@ var _ tbAPI = &tbAPIMock{}
 //	}
 type tbAPIMock struct {
 	// GetChatFunc mocks the GetChat method.
-	GetChatFunc func(config tbapi.ChatInfoConfig) (tbapi.Chat, error)
+	GetChatFunc func(config tbapi.ChatInfoConfig) (tbapi.ChatFullInfo, error)
 
 	// GetUpdatesChanFunc mocks the GetUpdatesChan method.
 	GetUpdatesChanFunc func(config tbapi.UpdateConfig) tbapi.UpdatesChannel
@@ -79,7 +79,7 @@ type tbAPIMock struct {
 }
 
 // GetChat calls GetChatFunc.
-func (mock *tbAPIMock) GetChat(config tbapi.ChatInfoConfig) (tbapi.Chat, error) {
+func (mock *tbAPIMock) GetChat(config tbapi.ChatInfoConfig) (tbapi.ChatFullInfo, error) {
 	if mock.GetChatFunc == nil {
 		panic("tbAPIMock.GetChatFunc: method is nil but tbAPI.GetChat was just called")
 	}

@@ -40,7 +40,7 @@ github.com/go-pkgz/requester/middleware/logger
 # github.com/go-pkgz/syncs v1.3.2
 ## explicit; go 1.20
 github.com/go-pkgz/syncs
-# github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
+# github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 => ./telegram-bot-api/
 ## explicit; go 1.16
 github.com/go-telegram-bot-api/telegram-bot-api/v5
 # github.com/google/uuid v1.6.0
@@ -132,3 +132,4 @@ golang.org/x/time/rate
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
+# github.com/go-telegram-bot-api/telegram-bot-api/v5 => ./telegram-bot-api/
