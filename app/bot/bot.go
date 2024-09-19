@@ -72,7 +72,7 @@ type Message struct {
 	ID         int
 	From       User
 	SenderChat SenderChat `json:"sender_chat,omitempty"`
-	ChatID     int64
+	ChatID     string
 	Sent       time.Time
 	HTML       string    `json:",omitempty"`
 	Text       string    `json:",omitempty"`

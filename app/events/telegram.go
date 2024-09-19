@@ -241,7 +241,7 @@ func (l *TelegramListener) transform(msg *tbapi.Message) *bot.Message {
 	}
 
 	if msg.Chat.ID != 0 {
-		message.ChatID = msg.Chat.ID
+		message.ChatID = strconv.Itoa(int(msg.Chat.ID)) + "_" + strconv.Itoa(msg.MessageThreadID)
 	}
 
 	if msg.From != nil {

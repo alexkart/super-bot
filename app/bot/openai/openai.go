@@ -100,7 +100,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		}
 
 		if shouldAnswerWithMention := o.rand(100) < 50; answeringToQuestion && shouldAnswerWithMention {
-			rndMsg := o.history.GetRandomMessage()
+			rndMsg := o.history.GetRandomMessage(msg.ChatID)
 			rndUsername := "@" + rndMsg.From.Username
 			if rndUsername == "@" {
 				rndUsername = rndMsg.From.DisplayName
@@ -112,7 +112,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 
 		log.Printf("[DEBUG] sysPrompt: %q", sysPrompt)
 
-		responseAI, err := o.chatGPTRequestWithHistory(sysPrompt)
+		responseAI, err := o.chatGPTRequestWithHistory(sysPrompt, msg.ChatID)
 
 		if err != nil {
 			log.Printf("[WARN] failed to make context request to ChatGPT error=%v", err)
@@ -121,7 +121,8 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		log.Printf("[DEBUG] OpenAI bot answer with history: %q", responseAI)
 
 		responseAIMsg := bot.Message{
-			Text: responseAI,
+			Text:   responseAI,
+			ChatID: msg.ChatID,
 		}
 		o.history.Add(responseAIMsg)
 
@@ -164,7 +165,8 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 
 	o.history.Add(msg)
 	responseAIMsg := bot.Message{
-		Text: responseAI,
+		Text:   responseAI,
+		ChatID: msg.ChatID,
 	}
 	o.history.Add(responseAIMsg)
 
@@ -278,15 +280,15 @@ func (o *OpenAI) shouldAnswerWithHistory(msg bot.Message) bool {
 	return o.rand(100) < int64(o.params.HistoryReplyProbability)
 }
 
-func (o *OpenAI) chatGPTRequestWithHistory(sysPrompt string) (response string, err error) {
-	messages := make([]openai.ChatCompletionMessage, 0, len(o.history.messages)+1)
+func (o *OpenAI) chatGPTRequestWithHistory(sysPrompt string, chatID string) (response string, err error) {
+	messages := make([]openai.ChatCompletionMessage, 0, len(o.history.GetMessagesByChatID(chatID))+1)
 
 	messages = append(messages, openai.ChatCompletionMessage{
 		Role:    openai.ChatMessageRoleSystem,
 		Content: sysPrompt,
 	})
 
-	for _, message := range o.history.messages {
+	for _, message := range o.history.GetMessagesByChatID(chatID) {
 		messages = append(messages, openai.ChatCompletionMessage{
 			Role:    openai.ChatMessageRoleUser,
 			Content: message.Text,
