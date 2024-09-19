@@ -76,6 +76,11 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 			return bot.Response{}
 		}
 
+		// don't answer on messages that start with 'http'
+		if strings.HasPrefix(msg.Text, "http") {
+			return bot.Response{}
+		}
+
 		// All the non-matching requests processed for the reactions based on the history.
 		// save message to history and answer with ChatGPT if needed
 		o.history.Add(msg)
