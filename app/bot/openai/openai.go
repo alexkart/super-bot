@@ -86,14 +86,12 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		o.history.Add(msg)
 
 		answeringToQuestion := false
-		sysPrompt := "This is a chat conversation. "
+		sysPrompt := "Respond in the same language as the last message and in a way that suits the tone of the conversation. Keep responses short (around 100 words), but make them interesting and fun. Add engaging facts or playful comments related to the topic when appropriate, and occasionally inject humor to keep things light. Use either formal or informal language based on the conversation style. Make sure to encourage further conversation with a follow-up question or thought-provoking comment, keeping the interaction lively and dynamic."
 
 		if o.shouldAnswerWithHistory(msg) {
 			answeringToQuestion = true
-			sysPrompt = sysPrompt + fmt.Sprintf("You reply with no more than 100 words, your answer should be in the same language as the question. Don't give a real answer to the question, just make something up, something interesting and maybe funny and witty.")
 		} else {
 			if shouldRandomlyReply := o.rand(100) < 10; shouldRandomlyReply {
-				sysPrompt = sysPrompt + fmt.Sprintf("You reply with no more than 100 words, your message should be in the same language as the last message. Say something related to the conversation or ask something to continue the conversation.")
 			} else {
 				return bot.Response{}
 			}
@@ -106,7 +104,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 				rndUsername = rndMsg.From.DisplayName
 			}
 			if rndUsername != "" {
-				sysPrompt = sysPrompt + fmt.Sprintf(" Be sure to mention %s in your response, you should ask them a question or just say something to them to continue the conversation.", rndUsername)
+				sysPrompt = sysPrompt + fmt.Sprintf(" Make sure to mention %s in your response, you should ask them a question or just say something to them to continue the conversation.", rndUsername)
 			} // else don't mention anyone
 		}
 
