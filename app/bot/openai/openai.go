@@ -270,6 +270,16 @@ func (o *OpenAI) chatGPTRequest(request, userPrompt, sysPrompt string) (response
 }
 
 func (o *OpenAI) shouldAnswerWithHistory(msg bot.Message) bool {
+	if strings.HasPrefix(strings.ToLower(msg.Text), "бот!") {
+		if ok, _ := o.checkRequest(msg.From.Username); !ok {
+			return false
+		}
+		if !o.superUser.IsSuper(msg.From.Username) {
+			o.lastDT = o.nowFn() // don't update lastDT for super users
+		}
+		return true
+	}
+
 	if msg.Text != "" && !strings.Contains(msg.Text, "?") {
 		return false
 	}
