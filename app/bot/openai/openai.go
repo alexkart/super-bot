@@ -69,7 +69,6 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 	//log.Printf("[-----------------DEBUG-----------------]")
 	//log.Printf("%+v", msg)
 	//log.Printf("[-----------------DEBUG-----------------]")
-	msg.Text = fmt.Sprintf("%s: %s", msg.From.DisplayName, msg.Text)
 	ok, reqText := o.request(msg.Text)
 	if !ok {
 		if !o.params.EnableAutoResponse || msg.Text == "idle" || len(msg.Text) < 3 {
@@ -81,6 +80,8 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		if strings.HasPrefix(msg.Text, "http") {
 			return bot.Response{}
 		}
+
+		msg.Text = fmt.Sprintf("%s: %s", msg.From.DisplayName, msg.Text)
 
 		// All the non-matching requests processed for the reactions based on the history.
 		// save message to history and answer with ChatGPT if needed
@@ -122,7 +123,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		log.Printf("[DEBUG] OpenAI bot answer with history: %q", responseAI)
 
 		responseAIMsg := bot.Message{
-			Text:   responseAI,
+			Text:   fmt.Sprintf("%s: %s", "You", responseAI),
 			ChatID: msg.ChatID,
 		}
 		o.history.Add(responseAIMsg)
@@ -164,9 +165,10 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		o.lastDT = o.nowFn() // don't update lastDT for super users
 	}
 
+	msg.Text = fmt.Sprintf("%s: %s", msg.From.DisplayName, msg.Text)
 	o.history.Add(msg)
 	responseAIMsg := bot.Message{
-		Text:   responseAI,
+		Text:   fmt.Sprintf("%s: %s", "You", responseAI),
 		ChatID: msg.ChatID,
 	}
 	o.history.Add(responseAIMsg)
