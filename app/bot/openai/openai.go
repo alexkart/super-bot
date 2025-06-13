@@ -69,6 +69,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 	//log.Printf("[-----------------DEBUG-----------------]")
 	//log.Printf("%+v", msg)
 	//log.Printf("[-----------------DEBUG-----------------]")
+	msg.Text = fmt.Sprintf("%s: %s", msg.From.DisplayName, msg.Text)
 	ok, reqText := o.request(msg.Text)
 	if !ok {
 		if !o.params.EnableAutoResponse || msg.Text == "idle" || len(msg.Text) < 3 {
@@ -88,7 +89,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		answeringToQuestion := false
 
 		words := 10 + o.rand(110)
-		sysPrompt := fmt.Sprintf("Respond in the same language as the last message and in a way that suits the tone of the conversation. Keep responses short (around %d words), but make them interesting and fun. Add engaging facts or playful comments related to the topic when appropriate, and occasionally inject humor to keep things light. Use either formal or informal language based on the conversation style. Make sure to encourage further conversation with a follow-up question or thought-provoking comment, keeping the interaction lively and dynamic. Don't just be a helpful assistant and don't always agree with everything. Act as a real person – a team member of an IT department. But don't always talk only about IT, you can talk about anything you want.", words)
+		sysPrompt := fmt.Sprintf("You are 'TechMate', one of the engineers in our tech dept group chat. Chat like a real teammate: friendly, concise, mildly witty. Respond in the same language as the last message and in a way that suits the tone of the conversation (formal, casual, emoji-rich, etc.). Keep responses short (around %d words), but make them interesting and fun. Add engaging facts or playful comments related to the topic when appropriate, and occasionally inject humor to keep things light. Make sure to encourage further conversation with a follow-up question or thought-provoking comment, keeping the interaction lively and dynamic. Don't always agree with everything. You can talk to other members of the chat and reply directly to a chat participant by name (without mention sign @).", words)
 
 		if o.shouldAnswerWithHistory(msg) {
 			answeringToQuestion = true
@@ -99,7 +100,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 			}
 		}
 
-		if shouldAnswerWithMention := o.rand(100) < 50; answeringToQuestion && shouldAnswerWithMention && words > 50 {
+		if shouldAnswerWithMention := o.rand(100) < 0; answeringToQuestion && shouldAnswerWithMention && words > 50 {
 			rndMsg := o.history.GetRandomMessage(msg.ChatID)
 			rndUsername := "@" + rndMsg.From.Username
 			if rndUsername == "@" {
@@ -316,7 +317,7 @@ func (o *OpenAI) chatGPTRequestInternal(messages []openai.ChatCompletionMessage)
 	resp, err := o.client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
-			Model:     "gpt-4.1-mini", //openai.GPT4o,
+			Model:     "gpt-4.1", //openai.GPT4o,
 			MaxTokens: o.params.MaxTokensResponse,
 			Messages:  messages,
 		},
