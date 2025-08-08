@@ -346,7 +346,7 @@ func (o *OpenAI) Summary(text string) (response string, err error) {
 
 // ReactOn keys
 func (o *OpenAI) ReactOn() []string {
-	return []string{"chat!", "gpt!", "ai!", "чат!"}
+	return []string{"chat!", "gpt!", "ai!", "чат!", "бот!"}
 }
 
 // CreateChatCompletion exposes the underlying openai.CreateChatCompletion method
