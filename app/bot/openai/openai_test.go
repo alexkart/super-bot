@@ -319,7 +319,7 @@ func TestOpenAI_OnMessage_shouldAnswerWithHistory(t *testing.T) {
 
 	for _, tt := range tbl {
 		t.Run(tt.name, func(t *testing.T) {
-			result := o.shouldAnswerWithHistory(bot.Message{ID: 2, Text: tt.message})
+			result := o.shouldAnswerWithHistory(bot.Message{ID: 2, Text: tt.message}, "")
 			assert.Equal(t, tt.expected, result)
 		})
 	}
@@ -362,7 +362,7 @@ func TestOpenAI_OnMessage_shouldAnswerWithHistory_NotEnoughMessages(t *testing.T
 
 	for _, tt := range tbl {
 		t.Run(tt.name, func(t *testing.T) {
-			result := o.shouldAnswerWithHistory(bot.Message{ID: 2, Text: tt.message})
+			result := o.shouldAnswerWithHistory(bot.Message{ID: 2, Text: tt.message}, "")
 			assert.Equal(t, tt.expected, result)
 		})
 	}
@@ -411,7 +411,7 @@ func TestOpenAI_OnMessage_shouldAnswerWithHistory_Random(t *testing.T) {
 			// 99 is always fail the probability check
 			o.rand = func(n int64) int64 { return tt.randResult }
 
-			result := o.shouldAnswerWithHistory(bot.Message{ID: 2, Text: tt.message})
+			result := o.shouldAnswerWithHistory(bot.Message{ID: 2, Text: tt.message}, "")
 			assert.Equal(t, tt.expected, result)
 		})
 	}

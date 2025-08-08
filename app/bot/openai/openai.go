@@ -81,6 +81,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 			return bot.Response{}
 		}
 
+		originalText := msg.Text
 		msg.Text = fmt.Sprintf("%s: %s", msg.From.DisplayName, msg.Text)
 
 		// All the non-matching requests processed for the reactions based on the history.
@@ -92,7 +93,7 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		words := 10 + o.rand(110)
 		sysPrompt := fmt.Sprintf("You are 'TechMate', one of the engineers in our tech dept group chat. Chat like a real teammate: friendly, concise, mildly witty. Respond in the same language as the last message and in a way that suits the tone of the conversation (formal, casual, emoji-rich, etc.). Keep responses short (around %d words), but make them interesting and fun. Add engaging facts or playful comments related to the topic when appropriate, and occasionally inject humor to keep things light. Make sure to encourage further conversation with a follow-up question or thought-provoking comment, keeping the interaction lively and dynamic. Don't always agree with everything. You can talk to other members of the chat and reply directly to a chat participant by name (without mention sign @).", words)
 
-		if o.shouldAnswerWithHistory(msg) {
+		if o.shouldAnswerWithHistory(msg, originalText) {
 			answeringToQuestion = true
 		} else {
 			if shouldRandomlyReply := o.rand(100) < 10; shouldRandomlyReply {
@@ -274,8 +275,8 @@ func (o *OpenAI) chatGPTRequest(request, userPrompt, sysPrompt string) (response
 	})
 }
 
-func (o *OpenAI) shouldAnswerWithHistory(msg bot.Message) bool {
-	if strings.HasPrefix(strings.ToLower(msg.Text), "бот!") {
+func (o *OpenAI) shouldAnswerWithHistory(msg bot.Message, msgText string) bool {
+	if strings.HasPrefix(strings.ToLower(msgText), "бот!") {
 		if ok, _ := o.checkRequest(msg.From.Username); !ok {
 			return false
 		}
@@ -346,7 +347,7 @@ func (o *OpenAI) Summary(text string) (response string, err error) {
 
 // ReactOn keys
 func (o *OpenAI) ReactOn() []string {
-	return []string{"chat!", "gpt!", "ai!", "чат!", "бот!"}
+	return []string{"chat!", "gpt!", "ai!", "чат!"}
 }
 
 // CreateChatCompletion exposes the underlying openai.CreateChatCompletion method
