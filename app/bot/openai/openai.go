@@ -319,7 +319,7 @@ func (o *OpenAI) chatGPTRequestInternal(messages []openai.ChatCompletionMessage)
 	resp, err := o.client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
-			Model:     "gpt-5-nano", //openai.GPT4o,
+			Model:     "gpt-4.1", //openai.GPT4o,
 			MaxTokens: o.params.MaxTokensResponse,
 			Messages:  messages,
 		},
