@@ -88,6 +88,10 @@ func (o *OpenAI) OnMessage(msg bot.Message) (response bot.Response) {
 		// save message to history and answer with ChatGPT if needed
 		o.history.Add(msg)
 
+		if strings.HasPrefix(strings.ToLower(originalText), "nobots!") {
+			return bot.Response{}
+		}
+
 		answeringToQuestion := false
 
 		words := 10 + o.rand(110)
